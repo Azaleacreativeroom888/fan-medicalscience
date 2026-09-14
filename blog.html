@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>blog ― カルテ日和</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eef2f7;
+    --paper:#fbfcfe;
+    --primary:#b0c4de;
+    --primary-deep:#7d94b3;
+    --ink:#2f3e50;
+    --ink-soft:#5b6b7d;
+    --stamp:#b8503f;
+    --line:#c7d3e0;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:28px 28px;
+    background-position:-1px -1px;
+    color:var(--ink);
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    line-height:1.85;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+
+  .binder{
+    position:fixed;
+    top:0; left:0; bottom:0;
+    width:34px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:space-evenly;
+    padding:60px 0;
+    pointer-events:none;
+    z-index:5;
+  }
+  .binder span{
+    width:14px;height:14px;
+    border-radius:50%;
+    background:var(--bg);
+    box-shadow:inset 0 0 0 2px var(--line), 0 1px 2px rgba(47,62,80,.15);
+  }
+  @media (max-width: 720px){ .binder{display:none;} }
+
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:0 24px 80px;
+  }
+  @media (min-width: 721px){ .wrap{ padding-left:70px; } }
+
+  .top-strip{
+    background:var(--ink);
+    color:var(--primary);
+    font-family:'DotGothic16', monospace;
+    font-size:.78rem;
+    letter-spacing:.08em;
+    padding:8px 24px;
+  }
+  @media (min-width: 721px){ .top-strip{ padding-left:70px; } }
+
+  .page-head{ padding-top:36px; margin-bottom:8px; }
+  .kicker{
+    font-family:'DotGothic16', monospace;
+    color:var(--primary-deep);
+    font-size:.85rem;
+    letter-spacing:.15em;
+  }
+  h1{
+    font-family:'Shippori Mincho', serif;
+    font-weight:700;
+    font-size:clamp(1.6rem, 4vw, 2.2rem);
+    margin:.3em 0 .2em;
+  }
+  .lead{
+    color:var(--ink-soft);
+    font-size:.9rem;
+    max-width:56ch;
+    margin:0 0 26px;
+  }
+
+  nav.tabs{
+    display:flex;
+    gap:6px;
+    margin-bottom:30px;
+  }
+  nav.tabs a{
+    text-decoration:none;
+    font-family:'Shippori Mincho', serif;
+    font-size:.92rem;
+    color:var(--ink-soft);
+    background:#dfe7f0;
+    padding:10px 20px 9px;
+    border-radius:8px 8px 0 0;
+    border:1px solid var(--line);
+    border-bottom:none;
+    position:relative;
+    top:1px;
+  }
+  nav.tabs a.current{
+    background:var(--paper);
+    color:var(--ink);
+    font-weight:700;
+    border-color:var(--primary-deep);
+    box-shadow:0 -2px 6px rgba(47,62,80,.06);
+  }
+  nav.tabs a:hover{ color:var(--ink); }
+
+  /* ---- twitter-style log ---- */
+  .log{
+    border-left:2px solid var(--line);
+    margin-left:6px;
+    padding-left:0;
+  }
+  .entry{
+    position:relative;
+    padding:0 0 26px 28px;
+  }
+  .entry::before{
+    content:"";
+    position:absolute;
+    left:-7px; top:4px;
+    width:12px; height:12px;
+    border-radius:50%;
+    background:var(--primary);
+    border:2px solid var(--primary-deep);
+  }
+  .entry .date{
+    font-family:'DotGothic16', monospace;
+    font-size:.78rem;
+    color:var(--primary-deep);
+    letter-spacing:.06em;
+    margin-bottom:6px;
+  }
+  .entry .body{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:14px 18px;
+    font-size:.92rem;
+    color:var(--ink);
+  }
+  .entry .body p{ margin:0; }
+  .entry .body p + p{ margin-top:.6em; }
+
+  .more{
+    text-align:center;
+    margin-top:10px;
+  }
+  .more button{
+    font-family:'DotGothic16', monospace;
+    letter-spacing:.06em;
+    font-size:.8rem;
+    background:none;
+    border:1px dashed var(--primary-deep);
+    color:var(--primary-deep);
+    padding:8px 22px;
+    border-radius:20px;
+    cursor:pointer;
+  }
+  .more button:hover{ background:var(--primary); color:var(--ink); border-style:solid; }
+  .hidden{ display:none; }
+
+  footer{
+    border-top:1px solid var(--line);
+    padding-top:30px;
+    margin-top:44px;
+    font-size:.82rem;
+    color:var(--ink-soft);
+  }
+  footer h3{
+    font-family:'Shippori Mincho', serif;
+    font-size:.95rem;
+    color:var(--ink);
+    margin:0 0 .6em;
+  }
+  .contact-form{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:28px;
+    max-width:480px;
+  }
+  .contact-form input, .contact-form textarea{
+    font-family:inherit;
+    font-size:.85rem;
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:8px 10px;
+    background:var(--paper);
+    color:var(--ink);
+    flex:1 1 200px;
+  }
+  .contact-form textarea{ flex:1 1 100%; min-height:70px; resize:vertical; }
+  .contact-form button{
+    font-family:'DotGothic16', monospace;
+    letter-spacing:.08em;
+    background:var(--primary-deep);
+    color:#fff;
+    border:none;
+    padding:9px 20px;
+    border-radius:3px;
+    cursor:pointer;
+  }
+  .contact-form button:hover{ background:var(--ink); }
+  .notice{
+    font-size:.75rem;
+    color:var(--ink-soft);
+    border:1px dashed var(--line);
+    padding:10px 14px;
+    border-radius:3px;
+    margin-bottom:18px;
+  }
+  .hub{ font-size:.78rem; }
+  .hub a{ color:var(--primary-deep); text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<div class="binder" aria-hidden="true">
+  <span></span><span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div class="top-strip">KARTE-BIYORI STUDY RECORD / 医療の勉強カルテ</div>
+
+<div class="wrap">
+
+  <div class="page-head">
+    <div class="kicker">DAILY LOG</div>
+    <h1>blog</h1>
+    <p class="lead">日付と一言だけの、学習の進捗メモです。調べたこと、わからなかったこと、思ったことをそのまま置いていきます。</p>
+  </div>
+
+  <nav class="tabs" aria-label="ページ切り替え">
+    <a href="index.html">index</a>
+    <a href="blog.html" class="current">blog</a>
+    <a href="column.html">column</a>
+    <a href="about.html">about</a>
+  </nav>
+
+  <div class="log" id="log">
+
+    <div class="entry">
+      <div class="date">2026.09.13</div>
+      <div class="body"><p>このサイトを立ち上げた。まずは体の仕組みから少しずつ調べていく予定。</p></div>
+    </div>
+
+    <div class="entry">
+      <div class="date">2026.09.10</div>
+      <div class="body"><p>心臓のつくりについて調べた。弁が4つあることを初めて知った。</p></div>
+    </div>
+
+    <div class="entry">
+      <div class="date">2026.09.06</div>
+      <div class="body"><p>応急処置の基本を少し復習。止血の仕方をメモしておく。</p></div>
+    </div>
+
+    <div class="entry hidden more-entries">
+      <div class="date">2026.09.02</div>
+      <div class="body"><p>薬の飲み合わせについて調べ始めた。思ったより奥が深い。</p></div>
+    </div>
+
+    <div class="entry hidden more-entries">
+      <div class="date">2026.08.28</div>
+      <div class="body"><p>神経系の図を見ながら整理。用語が多くて覚えるのが大変。</p></div>
+    </div>
+
+  </div>
+
+  <div class="more">
+    <button type="button" onclick="document.querySelectorAll('.more-entries').forEach(e=>e.classList.remove('hidden'));this.style.display='none';">
+      もっと見る
+    </button>
+  </div>
+
+  <footer>
+    <h3>お問い合わせ</h3>
+    <form class="contact-form" action="https://formspree.io/f/maqvpvoz" method="POST">
+      <input type="text" name="name" placeholder="お名前" required>
+      <input type="email" name="email" placeholder="メールアドレス" required>
+      <textarea name="message" placeholder="メッセージ" required></textarea>
+      <button type="submit">送信する</button>
+    </form>
+
+    <div class="notice">
+      当サイトの文章・イラスト・漫画等の無断使用、および生成AIの学習データとしての利用を固く禁じます。
+    </div>
+
+    <div class="hub">
+      <a href="https://azalea72.example/">Azalea Creative Room</a> の関連サイトです。
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
