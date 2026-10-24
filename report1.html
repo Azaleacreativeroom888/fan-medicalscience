@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ドラマにでてきた病気一覧 ― カルテ日和</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eef2f7;
+    --paper:#fbfcfe;
+    --primary:#b0c4de;
+    --primary-deep:#7d94b3;
+    --ink:#2f3e50;
+    --ink-soft:#5b6b7d;
+    --stamp:#b8503f;
+    --line:#c7d3e0;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:28px 28px;
+    background-position:-1px -1px;
+    color:var(--ink);
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    line-height:1.85;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+
+  .binder{
+    position:fixed;
+    top:0; left:0; bottom:0;
+    width:34px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:space-evenly;
+    padding:60px 0;
+    pointer-events:none;
+    z-index:5;
+  }
+  .binder span{
+    width:14px;height:14px;
+    border-radius:50%;
+    background:var(--bg);
+    box-shadow:inset 0 0 0 2px var(--line), 0 1px 2px rgba(47,62,80,.15);
+  }
+  @media (max-width: 720px){ .binder{display:none;} }
+
+  .wrap{
+    max-width:860px;
+    margin:0 auto;
+    padding:0 24px 80px;
+  }
+  @media (min-width: 721px){ .wrap{ padding-left:70px; } }
+
+  .top-strip{
+    background:var(--ink);
+    color:var(--primary);
+    font-family:'DotGothic16', monospace;
+    font-size:.78rem;
+    letter-spacing:.08em;
+    padding:8px 24px;
+  }
+  @media (min-width: 721px){ .top-strip{ padding-left:70px; } }
+
+  .page-head{ padding-top:36px; margin-bottom:8px; }
+  .kicker{
+    font-family:'DotGothic16', monospace;
+    color:var(--primary-deep);
+    font-size:.85rem;
+    letter-spacing:.15em;
+  }
+  h1{
+    font-family:'Shippori Mincho', serif;
+    font-weight:700;
+    font-size:clamp(1.5rem, 4vw, 2.1rem);
+    margin:.3em 0 .2em;
+  }
+  .lead{
+    color:var(--ink-soft);
+    font-size:.9rem;
+    max-width:58ch;
+    margin:0 0 26px;
+  }
+
+  nav.tabs{
+    display:flex;
+    gap:6px;
+    margin-bottom:30px;
+  }
+  nav.tabs a{
+    text-decoration:none;
+    font-family:'Shippori Mincho', serif;
+    font-size:.92rem;
+    color:var(--ink-soft);
+    background:#dfe7f0;
+    padding:10px 20px 9px;
+    border-radius:8px 8px 0 0;
+    border:1px solid var(--line);
+    border-bottom:none;
+    position:relative;
+    top:1px;
+  }
+  nav.tabs a.current{
+    background:var(--paper);
+    color:var(--ink);
+    font-weight:700;
+    border-color:var(--primary-deep);
+    box-shadow:0 -2px 6px rgba(47,62,80,.06);
+  }
+  nav.tabs a:hover{ color:var(--ink); }
+
+  .back{
+    display:inline-block;
+    text-decoration:none;
+    font-family:'DotGothic16', monospace;
+    font-size:.78rem;
+    letter-spacing:.08em;
+    color:var(--primary-deep);
+    margin-bottom:22px;
+  }
+  .back:hover{ color:var(--ink); }
+
+  /* ---- search ---- */
+  .search{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:22px;
+  }
+  .search label{
+    font-family:'DotGothic16', monospace;
+    font-size:.74rem;
+    letter-spacing:.1em;
+    color:var(--primary-deep);
+  }
+  .search input{
+    flex:1;
+    max-width:320px;
+    font-family:inherit;
+    font-size:.9rem;
+    color:var(--ink);
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:8px 12px;
+    outline:none;
+  }
+  .search input:focus{
+    border-color:var(--primary-deep);
+    box-shadow:0 0 0 3px rgba(176,196,222,.45);
+  }
+  .count{
+    font-family:'DotGothic16', monospace;
+    font-size:.74rem;
+    color:var(--ink-soft);
+    margin-left:auto;
+  }
+
+  /* ---- disease records ---- */
+  .list{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+    margin-bottom:44px;
+  }
+  .disease{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-left:5px solid var(--primary);
+    border-radius:2px 4px 4px 2px;
+    padding:18px 24px 20px;
+  }
+  .disease .no{
+    font-family:'DotGothic16', monospace;
+    font-size:.72rem;
+    color:var(--primary-deep);
+    letter-spacing:.1em;
+  }
+  .disease h2{
+    font-family:'Shippori Mincho', serif;
+    font-size:1.2rem;
+    margin:.1em 0 .6em;
+  }
+  .disease dl{
+    display:grid;
+    grid-template-columns:130px 1fr;
+    margin:0;
+  }
+  .disease dt, .disease dd{
+    margin:0;
+    padding:9px 0;
+    border-top:1px dotted var(--line);
+    font-size:.88rem;
+  }
+  .disease dt{
+    font-family:'DotGothic16', monospace;
+    font-size:.74rem;
+    letter-spacing:.08em;
+    color:var(--primary-deep);
+    padding-top:12px;
+  }
+  .disease dd{ color:var(--ink); }
+  .disease dd.where{ color:var(--ink-soft); }
+  @media (max-width: 520px){
+    .disease dl{ grid-template-columns:1fr; }
+    .disease dt{ border-top:1px dotted var(--line); padding-bottom:0; }
+    .disease dd{ border-top:none; padding-top:2px; }
+  }
+  .empty{
+    display:none;
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:.88rem;
+    padding:20px 0 40px;
+  }
+
+  footer{
+    border-top:1px solid var(--line);
+    padding-top:24px;
+    font-size:.78rem;
+    color:var(--ink-soft);
+  }
+  .notice{
+    border:1px dashed var(--line);
+    padding:12px 16px;
+    border-radius:3px;
+    line-height:1.8;
+  }
+  .notice p{ margin:0; }
+  .notice p + p{ margin-top:.6em; }
+</style>
+</head>
+<body>
+
+<div class="binder" aria-hidden="true">
+  <span></span><span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div class="top-strip">KARTE-BIYORI STUDY RECORD / 医療の勉強カルテ</div>
+
+<div class="wrap">
+
+  <div class="page-head">
+    <div class="kicker">REPORT 01</div>
+    <h1>ドラマにでてきた病気一覧</h1>
+    <p class="lead">ドラマに登場した病気を、①病名 ②解説 ③どこででてきたか の3項目でまとめています。</p>
+  </div>
+
+  <nav class="tabs" aria-label="ページ切り替え">
+    <a href="index.html">index</a>
+    <a href="blog.html">blog</a>
+    <a href="column.html" class="current">column</a>
+    <a href="about.html">about</a>
+  </nav>
+
+  <a class="back" href="column.html">← columnに戻る</a>
+
+  <div class="search">
+    <label for="q">病名で検索</label>
+    <input type="text" id="q" placeholder="例：インフルエンザ">
+    <span class="count" id="count"></span>
+  </div>
+
+  <div class="list" id="list">
+
+    <article class="disease">
+      <div class="no">NO.001</div>
+      <h2>インフルエンザ</h2>
+      <dl>
+        <dt>① 病名</dt>
+        <dd>インフルエンザ</dd>
+        <dt>② 解説</dt>
+        <dd>インフルエンザウイルスによる感染症。急な高熱、関節痛、筋肉痛、全身のだるさなどが特徴で、飛沫や接触によって広がる。</dd>
+        <dt>③ どこででてきたか</dt>
+        <dd class="where">（ドラマ名・第◯話）</dd>
+      </dl>
+    </article>
+
+    <article class="disease">
+      <div class="no">NO.002</div>
+      <h2>虫垂炎</h2>
+      <dl>
+        <dt>① 病名</dt>
+        <dd>虫垂炎（いわゆる「盲腸」）</dd>
+        <dt>② 解説</dt>
+        <dd>大腸の入り口付近にある虫垂に炎症が起こる病気。みぞおちから右下腹部へ移る腹痛、吐き気、発熱がよく見られる。重症の場合は手術を行うことがある。</dd>
+        <dt>③ どこででてきたか</dt>
+        <dd class="where">（ドラマ名・第◯話）</dd>
+      </dl>
+    </article>
+
+    <article class="disease">
+      <div class="no">NO.003</div>
+      <h2>心筋梗塞</h2>
+      <dl>
+        <dt>① 病名</dt>
+        <dd>心筋梗塞</dd>
+        <dt>② 解説</dt>
+        <dd>心臓に血液を送る冠動脈が詰まり、心臓の筋肉に血液が届かなくなる病気。強い胸の痛みや圧迫感が続くのが特徴で、一刻も早い救急対応が必要とされる。</dd>
+        <dt>③ どこででてきたか</dt>
+        <dd class="where">（ドラマ名・第◯話）</dd>
+      </dl>
+    </article>
+
+  </div>
+
+  <p class="empty" id="empty">該当する病名が見つかりませんでした。</p>
+
+  <footer>
+    <div class="notice">
+      <p>このページは医療の学習記録であり、診断や治療の助言ではありません。体調に不安がある場合は、必ず医療機関にご相談ください。</p>
+      <p>当サイトに掲載されている画像・文章・作品について、AI学習への利用、トレース（トレパク）、無断転載・転載、二次利用を禁止します。</p>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  (function(){
+    var q = document.getElementById('q');
+    var items = Array.prototype.slice.call(document.querySelectorAll('.disease'));
+    var count = document.getElementById('count');
+    var empty = document.getElementById('empty');
+
+    function update(){
+      var key = q.value.trim().toLowerCase();
+      var shown = 0;
+      items.forEach(function(el){
+        var name = el.querySelector('h2').textContent.toLowerCase();
+        var hit = !key || name.indexOf(key) !== -1;
+        el.style.display = hit ? '' : 'none';
+        if (hit) shown++;
+      });
+      count.textContent = shown + ' / ' + items.length + ' 件';
+      empty.style.display = shown ? 'none' : 'block';
+    }
+    q.addEventListener('input', update);
+    update();
+  })();
+</script>
+
+</body>
+</html>
