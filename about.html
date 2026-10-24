@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>about ― カルテ日和</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eef2f7;
+    --paper:#fbfcfe;
+    --primary:#b0c4de;
+    --primary-deep:#7d94b3;
+    --ink:#2f3e50;
+    --ink-soft:#5b6b7d;
+    --stamp:#b8503f;
+    --line:#c7d3e0;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:28px 28px;
+    background-position:-1px -1px;
+    color:var(--ink);
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    line-height:1.85;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+
+  .binder{
+    position:fixed;
+    top:0; left:0; bottom:0;
+    width:34px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:space-evenly;
+    padding:60px 0;
+    pointer-events:none;
+    z-index:5;
+  }
+  .binder span{
+    width:14px;height:14px;
+    border-radius:50%;
+    background:var(--bg);
+    box-shadow:inset 0 0 0 2px var(--line), 0 1px 2px rgba(47,62,80,.15);
+  }
+  @media (max-width: 720px){ .binder{display:none;} }
+
+  .wrap{
+    max-width:920px;
+    margin:0 auto;
+    padding:0 24px 80px;
+  }
+  @media (min-width: 721px){ .wrap{ padding-left:70px; } }
+
+  .top-strip{
+    background:var(--ink);
+    color:var(--primary);
+    font-family:'DotGothic16', monospace;
+    font-size:.78rem;
+    letter-spacing:.08em;
+    padding:8px 24px;
+  }
+  @media (min-width: 721px){ .top-strip{ padding-left:70px; } }
+
+  .page-head{ padding-top:36px; margin-bottom:8px; }
+  .kicker{
+    font-family:'DotGothic16', monospace;
+    color:var(--primary-deep);
+    font-size:.85rem;
+    letter-spacing:.15em;
+  }
+  h1{
+    font-family:'Shippori Mincho', serif;
+    font-weight:700;
+    font-size:clamp(1.6rem, 4vw, 2.2rem);
+    margin:.3em 0 .2em;
+  }
+  .lead{
+    color:var(--ink-soft);
+    font-size:.9rem;
+    max-width:58ch;
+    margin:0 0 26px;
+  }
+
+  nav.tabs{
+    display:flex;
+    gap:6px;
+    margin-bottom:30px;
+  }
+  nav.tabs a{
+    text-decoration:none;
+    font-family:'Shippori Mincho', serif;
+    font-size:.92rem;
+    color:var(--ink-soft);
+    background:#dfe7f0;
+    padding:10px 20px 9px;
+    border-radius:8px 8px 0 0;
+    border:1px solid var(--line);
+    border-bottom:none;
+    position:relative;
+    top:1px;
+  }
+  nav.tabs a.current{
+    background:var(--paper);
+    color:var(--ink);
+    font-weight:700;
+    border-color:var(--primary-deep);
+    box-shadow:0 -2px 6px rgba(47,62,80,.06);
+  }
+  nav.tabs a:hover{ color:var(--ink); }
+
+  h2.section-title{
+    font-family:'Shippori Mincho', serif;
+    font-size:1.2rem;
+    margin:0 0 6px;
+    padding-left:14px;
+    border-left:4px solid var(--stamp);
+  }
+  .section-note{
+    font-size:.82rem;
+    color:var(--ink-soft);
+    margin:0 0 18px 18px;
+  }
+
+  /* ---- profile chart ---- */
+  .profile{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-top:4px solid var(--primary);
+    border-radius:2px 4px 4px 4px;
+    padding:24px 28px;
+    margin-bottom:44px;
+  }
+  .profile dl{
+    display:grid;
+    grid-template-columns:110px 1fr;
+    gap:0;
+    margin:0 0 18px;
+  }
+  .profile dt, .profile dd{
+    padding:9px 0;
+    border-bottom:1px dotted var(--line);
+    margin:0;
+    font-size:.9rem;
+  }
+  .profile dt{
+    font-family:'DotGothic16', monospace;
+    font-size:.74rem;
+    letter-spacing:.1em;
+    color:var(--primary-deep);
+    padding-top:12px;
+  }
+  .profile p{
+    margin:0;
+    font-size:.9rem;
+    color:var(--ink-soft);
+    max-width:66ch;
+  }
+  @media (max-width: 520px){
+    .profile dl{ grid-template-columns:1fr; }
+    .profile dt{ border-bottom:none; padding-bottom:0; }
+  }
+
+  /* ---- links ---- */
+  .link-label{
+    font-family:'DotGothic16', monospace;
+    font-size:.74rem;
+    letter-spacing:.15em;
+    color:var(--primary-deep);
+    margin:0 0 12px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .link-label::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:var(--line);
+  }
+  .link-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));
+    gap:14px;
+    margin-bottom:30px;
+  }
+  .link-card{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    text-decoration:none;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-left:4px solid var(--primary);
+    border-radius:3px;
+    padding:14px 16px;
+    transition:transform .15s ease, box-shadow .15s ease, border-left-color .15s ease;
+  }
+  .link-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 14px rgba(47,62,80,.1);
+    border-left-color:var(--stamp);
+  }
+  .link-text{ flex:1; min-width:0; }
+  .link-name{
+    display:block;
+    font-family:'Shippori Mincho', serif;
+    font-weight:700;
+    font-size:.95rem;
+    color:var(--ink);
+  }
+  .link-desc{
+    display:block;
+    font-size:.76rem;
+    color:var(--ink-soft);
+    line-height:1.5;
+    margin-top:2px;
+  }
+  .link-arrow{
+    color:var(--primary-deep);
+    font-size:1.1rem;
+    transition:transform .15s ease;
+  }
+  .link-card:hover .link-arrow{ transform:translateX(3px); }
+
+  /* ---- contact form ---- */
+  .form-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-top:4px solid var(--primary);
+    border-radius:2px 4px 4px 4px;
+    padding:26px 28px;
+    margin:14px 0 44px;
+    max-width:620px;
+  }
+  .form-intro{
+    font-size:.85rem;
+    color:var(--ink-soft);
+    margin:0 0 20px;
+  }
+  .form-group{ margin-bottom:16px; }
+  .form-label{
+    display:block;
+    font-family:'DotGothic16', monospace;
+    font-size:.74rem;
+    letter-spacing:.1em;
+    color:var(--primary-deep);
+    margin-bottom:5px;
+  }
+  .required{ color:var(--stamp); font-style:normal; }
+  .form-input, .form-textarea{
+    width:100%;
+    font-family:inherit;
+    font-size:.9rem;
+    color:var(--ink);
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:9px 12px;
+    outline:none;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  .form-input:focus, .form-textarea:focus{
+    border-color:var(--primary-deep);
+    box-shadow:0 0 0 3px rgba(176,196,222,.45);
+  }
+  .form-textarea{ min-height:130px; resize:vertical; }
+  .field-error{
+    display:block;
+    font-size:.74rem;
+    color:var(--stamp);
+    margin-top:4px;
+  }
+  .form-submit{
+    font-family:'DotGothic16', monospace;
+    letter-spacing:.12em;
+    font-size:.9rem;
+    background:var(--ink);
+    color:var(--primary);
+    border:none;
+    padding:10px 28px;
+    border-radius:3px;
+    cursor:pointer;
+    transition:background .2s;
+  }
+  .form-submit:hover{ background:var(--primary-deep); color:#fff; }
+  .form-submit:disabled{ opacity:.5; cursor:not-allowed; }
+  .form-success{
+    background:#e6f0e8;
+    border:1px solid #9fc2a6;
+    border-radius:3px;
+    padding:14px 18px;
+    text-align:center;
+    font-size:.88rem;
+    margin-bottom:18px;
+  }
+  .form-error-global{
+    background:#f7e5e1;
+    border:1px solid #d9a69c;
+    border-radius:3px;
+    padding:12px 16px;
+    color:var(--stamp);
+    font-size:.84rem;
+    margin-bottom:16px;
+  }
+
+  /* ---- footer ---- */
+  footer{
+    border-top:1px solid var(--line);
+    padding-top:26px;
+    font-size:.78rem;
+    color:var(--ink-soft);
+  }
+  .notice{
+    border:1px dashed var(--line);
+    padding:12px 16px;
+    border-radius:3px;
+    line-height:1.8;
+  }
+  .notice p{ margin:0; }
+  .notice p + p{ margin-top:.6em; }
+</style>
+</head>
+<body>
+
+<div class="binder" aria-hidden="true">
+  <span></span><span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div class="top-strip">KARTE-BIYORI STUDY RECORD / 医療の勉強カルテ</div>
+
+<div class="wrap">
+
+  <div class="page-head">
+    <div class="kicker">ABOUT</div>
+    <h1>about</h1>
+    <p class="lead">このサイトと運営者についての紹介、リンク集、お問い合わせフォームです。</p>
+  </div>
+
+  <nav class="tabs" aria-label="ページ切り替え">
+    <a href="index.html">index</a>
+    <a href="blog.html">blog</a>
+    <a href="column.html">column</a>
+    <a href="about.html" class="current">about</a>
+  </nav>
+
+  <h2 class="section-title">プロフィール</h2>
+  <p class="section-note">運営者のカルテです。</p>
+  <section class="profile">
+    <dl>
+      <dt>NAME</dt><dd>りっちゃん（Azalea72）</dd>
+      <dt>OCCUPATION</dt><dd>漫画家・イラストレーター</dd>
+      <dt>SITE</dt><dd>カルテ日和（医療の勉強ノート）</dd>
+      <dt>PURPOSE</dt><dd>医療の基礎知識を学び、記録すること</dd>
+    </dl>
+    <p>
+      医学や医療に関することを、少しずつ調べながらカルテのように書き残している学習サイトです。専門家ではなく、一学習者としての記録です。内容には誤りが含まれる可能性があり、医療上の判断や診断・治療の代わりにはなりません。体調に不安がある場合は、必ず医療機関にご相談ください。
+    </p>
+  </section>
+
+  <h2 class="section-title">リンク</h2>
+  <p class="section-note">ご連絡は以下のSNSまたはフォームからお願いします。</p>
+
+  <p class="link-label">漫画・イラスト掲載サイト</p>
+  <div class="link-grid">
+    <a class="link-card" href="https://rookie.shonenjump.com/users/14728546961183734555" target="_blank" rel="noopener">
+      <div class="link-text">
+        <span class="link-name">ジャンプルーキー</span>
+        <span class="link-desc">オリジナル漫画を掲載中</span>
+      </div>
+      <span class="link-arrow">›</span>
+    </a>
+    <a class="link-card" href="https://www.pixiv.net/users/105728284" target="_blank" rel="noopener">
+      <div class="link-text">
+        <span class="link-name">Pixiv</span>
+        <span class="link-desc">二次創作はこちらに掲載</span>
+      </div>
+      <span class="link-arrow">›</span>
+    </a>
+  </div>
+
+  <p class="link-label">SNS・その他</p>
+  <div class="link-grid">
+    <a class="link-card" href="https://bsky.app/profile/azaleaazalea88.bsky.social" target="_blank" rel="noopener">
+      <div class="link-text">
+        <span class="link-name">Bluesky</span>
+        <span class="link-desc">近況・作品のお知らせ</span>
+      </div>
+      <span class="link-arrow">›</span>
+    </a>
+    <a class="link-card" href="https://www.youtube.com/@LilyPopins0512" target="_blank" rel="noopener">
+      <div class="link-text">
+        <span class="link-name">YouTube（リリポピ）</span>
+        <span class="link-desc">動画チャンネル</span>
+      </div>
+      <span class="link-arrow">›</span>
+    </a>
+    <a class="link-card" href="https://lilipopi.github.io/lilypopins/" target="_blank" rel="noopener">
+      <div class="link-text">
+        <span class="link-name">リリポピのホームページ</span>
+        <span class="link-desc">別サイト</span>
+      </div>
+      <span class="link-arrow">›</span>
+    </a>
+  </div>
+
+  <p class="link-label">Azalea72のホームページ</p>
+  <div class="link-grid">
+    <a class="link-card" href="https://azaleacreativeroom888.github.io/storyreviewazalea/" target="_blank" rel="noopener">
+      <div class="link-text">
+        <span class="link-name">書評サイト</span>
+        <span class="link-desc">本・アニメ・映画・ゲーム・小説の備忘録</span>
+      </div>
+      <span class="link-arrow">›</span>
+    </a>
+    <a class="link-card" href="https://azaleacreativeroom888.github.io/fan-english/" target="_blank" rel="noopener">
+      <div class="link-text">
+        <span class="link-name">英語サイト（English Site）</span>
+        <span class="link-desc">英語話者と英語学習者に向けたサイト</span>
+      </div>
+      <span class="link-arrow">›</span>
+    </a>
+    <a class="link-card" href="https://azaleacreativeroom888.github.io/fan-watercolor/" target="_blank" rel="noopener">
+      <div class="link-text">
+        <span class="link-name">水彩画サイト</span>
+        <span class="link-desc">水彩画掲載</span>
+      </div>
+      <span class="link-arrow">›</span>
+    </a>
+  </div>
+
+  <h2 class="section-title">お問い合わせフォーム</h2>
+  <div class="form-card">
+    <p class="form-intro">ご質問・ご感想などはこちらからどうぞ。Gmailで受け取り、返信いたします。</p>
+
+    <div data-fs-success class="form-success" style="display:none;">
+      <p>メッセージを送信しました。ありがとうございます！</p>
+    </div>
+
+    <div data-fs-error class="form-error-global" style="display:none;"></div>
+
+    <form id="contact-form" action="https://formspree.io/f/maqvpvoz" method="POST">
+
+      <div class="form-group">
+        <label class="form-label" for="name">お名前</label>
+        <input class="form-input" type="text" id="name" name="name" placeholder="お名前" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">メールアドレス <span class="required">*</span></label>
+        <input class="form-input" type="email" id="email" name="email" data-fs-field placeholder="example@email.com" required>
+        <span data-fs-error="email" class="field-error"></span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="message">メッセージ <span class="required">*</span></label>
+        <textarea class="form-textarea" id="message" name="message" data-fs-field placeholder="メッセージを入力してください…" rows="6" required></textarea>
+        <span data-fs-error="message" class="field-error"></span>
+      </div>
+
+      <button class="form-submit" type="submit" data-fs-submit-btn>送信する</button>
+
+    </form>
+  </div>
+
+  <footer>
+    <div class="notice">
+      <p>当サイトに掲載されている画像・文章・作品について、AI学習への利用、トレース（トレパク）、無断転載・転載、二次利用を禁止します。スクリーンショットの転載・無断引用はご遠慮ください。</p>
+      <p>Please refrain from using any images, text, or works on this website for AI training, tracing, unauthorized reproduction, redistribution, or secondary use.</p>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
+  formspree('initForm', { formElement: '#contact-form', formId: 'maqvpvoz' });
+</script>
+<script src="https://unpkg.com/@formspree/ajax@1" defer></script>
+
+</body>
+</html>
