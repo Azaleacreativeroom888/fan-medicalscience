@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>column ― カルテ日和</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eef2f7;
+    --paper:#fbfcfe;
+    --primary:#b0c4de;
+    --primary-deep:#7d94b3;
+    --ink:#2f3e50;
+    --ink-soft:#5b6b7d;
+    --stamp:#b8503f;
+    --line:#c7d3e0;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:28px 28px;
+    background-position:-1px -1px;
+    color:var(--ink);
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    line-height:1.85;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+
+  .binder{
+    position:fixed;
+    top:0; left:0; bottom:0;
+    width:34px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:space-evenly;
+    padding:60px 0;
+    pointer-events:none;
+    z-index:5;
+  }
+  .binder span{
+    width:14px;height:14px;
+    border-radius:50%;
+    background:var(--bg);
+    box-shadow:inset 0 0 0 2px var(--line), 0 1px 2px rgba(47,62,80,.15);
+  }
+  @media (max-width: 720px){ .binder{display:none;} }
+
+  .wrap{
+    max-width:920px;
+    margin:0 auto;
+    padding:0 24px 80px;
+  }
+  @media (min-width: 721px){ .wrap{ padding-left:70px; } }
+
+  .top-strip{
+    background:var(--ink);
+    color:var(--primary);
+    font-family:'DotGothic16', monospace;
+    font-size:.78rem;
+    letter-spacing:.08em;
+    padding:8px 24px;
+  }
+  @media (min-width: 721px){ .top-strip{ padding-left:70px; } }
+
+  .page-head{ padding-top:36px; margin-bottom:8px; }
+  .kicker{
+    font-family:'DotGothic16', monospace;
+    color:var(--primary-deep);
+    font-size:.85rem;
+    letter-spacing:.15em;
+  }
+  h1{
+    font-family:'Shippori Mincho', serif;
+    font-weight:700;
+    font-size:clamp(1.6rem, 4vw, 2.2rem);
+    margin:.3em 0 .2em;
+  }
+  .lead{
+    color:var(--ink-soft);
+    font-size:.9rem;
+    max-width:58ch;
+    margin:0 0 26px;
+  }
+
+  nav.tabs{
+    display:flex;
+    gap:6px;
+    margin-bottom:30px;
+  }
+  nav.tabs a{
+    text-decoration:none;
+    font-family:'Shippori Mincho', serif;
+    font-size:.92rem;
+    color:var(--ink-soft);
+    background:#dfe7f0;
+    padding:10px 20px 9px;
+    border-radius:8px 8px 0 0;
+    border:1px solid var(--line);
+    border-bottom:none;
+    position:relative;
+    top:1px;
+  }
+  nav.tabs a.current{
+    background:var(--paper);
+    color:var(--ink);
+    font-weight:700;
+    border-color:var(--primary-deep);
+    box-shadow:0 -2px 6px rgba(47,62,80,.06);
+  }
+  nav.tabs a:hover{ color:var(--ink); }
+
+  h2.section-title{
+    font-family:'Shippori Mincho', serif;
+    font-size:1.2rem;
+    margin:0 0 6px;
+    padding-left:14px;
+    border-left:4px solid var(--stamp);
+  }
+  .section-note{
+    font-size:.82rem;
+    color:var(--ink-soft);
+    margin:0 0 18px 18px;
+  }
+
+  /* ---- art / manga shelf ---- */
+  .shelf{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));
+    gap:16px;
+    margin-bottom:44px;
+  }
+  .plate{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:10px 10px 14px;
+  }
+  .plate .frame{
+    aspect-ratio:4/3;
+    background:
+      repeating-linear-gradient(135deg, #e6edf5, #e6edf5 8px, #dce6f1 8px, #dce6f1 9px);
+    border:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'DotGothic16', monospace;
+    font-size:.72rem;
+    color:var(--primary-deep);
+    letter-spacing:.1em;
+    overflow:hidden;
+  }
+  .plate .frame img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .plate .cap{
+    margin-top:10px;
+    font-size:.82rem;
+  }
+  .plate .cap .no{
+    display:block;
+    font-family:'DotGothic16', monospace;
+    font-size:.68rem;
+    color:var(--primary-deep);
+    letter-spacing:.08em;
+  }
+  .plate .cap b{
+    font-family:'Shippori Mincho', serif;
+    font-weight:700;
+  }
+
+  /* ---- 4koma ---- */
+  .koma-wrap{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(190px, 1fr));
+    gap:22px;
+    margin-bottom:44px;
+  }
+  .koma{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:12px 12px 14px;
+  }
+  .koma .panels{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .koma .panel{
+    aspect-ratio:16/9;
+    border:2px solid var(--ink);
+    background:#f1f5fa;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'DotGothic16', monospace;
+    font-size:.7rem;
+    color:var(--primary-deep);
+    overflow:hidden;
+  }
+  .koma .panel img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .koma .cap{
+    margin-top:10px;
+    font-size:.82rem;
+  }
+  .koma .cap .no{
+    display:block;
+    font-family:'DotGothic16', monospace;
+    font-size:.68rem;
+    color:var(--primary-deep);
+    letter-spacing:.08em;
+  }
+  .koma .cap b{ font-family:'Shippori Mincho', serif; }
+
+  /* ---- essays ---- */
+  .essays{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+    margin-bottom:44px;
+  }
+  article.essay{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-left:5px solid var(--primary);
+    border-radius:2px 4px 4px 2px;
+    padding:22px 28px 24px;
+  }
+  article.essay .meta{
+    font-family:'DotGothic16', monospace;
+    font-size:.74rem;
+    color:var(--primary-deep);
+    letter-spacing:.08em;
+  }
+  article.essay h3{
+    font-family:'Shippori Mincho', serif;
+    font-size:1.12rem;
+    margin:.3em 0 .6em;
+  }
+  article.essay p{
+    margin:0;
+    font-size:.92rem;
+    color:var(--ink);
+    max-width:66ch;
+  }
+  article.essay p + p{ margin-top:.8em; }
+
+  footer{
+    border-top:1px solid var(--line);
+    padding-top:30px;
+    font-size:.82rem;
+    color:var(--ink-soft);
+  }
+  footer h3{
+    font-family:'Shippori Mincho', serif;
+    font-size:.95rem;
+    color:var(--ink);
+    margin:0 0 .6em;
+  }
+  .contact-form{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:28px;
+    max-width:480px;
+  }
+  .contact-form input, .contact-form textarea{
+    font-family:inherit;
+    font-size:.85rem;
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:8px 10px;
+    background:var(--paper);
+    color:var(--ink);
+    flex:1 1 200px;
+  }
+  .contact-form textarea{ flex:1 1 100%; min-height:70px; resize:vertical; }
+  .contact-form button{
+    font-family:'DotGothic16', monospace;
+    letter-spacing:.08em;
+    background:var(--primary-deep);
+    color:#fff;
+    border:none;
+    padding:9px 20px;
+    border-radius:3px;
+    cursor:pointer;
+  }
+  .contact-form button:hover{ background:var(--ink); }
+  .notice{
+    font-size:.75rem;
+    color:var(--ink-soft);
+    border:1px dashed var(--line);
+    padding:10px 14px;
+    border-radius:3px;
+    margin-bottom:18px;
+  }
+  .hub{ font-size:.78rem; }
+  .hub a{ color:var(--primary-deep); text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<div class="binder" aria-hidden="true">
+  <span></span><span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div class="top-strip">KARTE-BIYORI STUDY RECORD / 医療の勉強カルテ</div>
+
+<div class="wrap">
+
+  <div class="page-head">
+    <div class="kicker">COLUMN &amp; ART</div>
+    <h1>column</h1>
+    <p class="lead">医療にまつわる漫画・イラスト・四コマと、調べたことをまとめた軽い読み物を置いています。</p>
+  </div>
+
+  <nav class="tabs" aria-label="ページ切り替え">
+    <a href="index.html">index</a>
+    <a href="blog.html">blog</a>
+    <a href="column.html" class="current">column</a>
+    <a href="about.html">about</a>
+  </nav>
+
+  <h2 class="section-title">漫画・イラスト</h2>
+  <p class="section-note">※ 画像を置く場合は、下の「IMAGE」の枠を &lt;img src="画像ファイル名"&gt; に差し替えてください。</p>
+  <div class="shelf">
+    <div class="plate">
+      <div class="frame">IMAGE</div>
+      <div class="cap"><span class="no">ART 01</span><b>人体のイラスト</b></div>
+    </div>
+    <div class="plate">
+      <div class="frame">IMAGE</div>
+      <div class="cap"><span class="no">ART 02</span><b>臓器のスケッチ</b></div>
+    </div>
+    <div class="plate">
+      <div class="frame">IMAGE</div>
+      <div class="cap"><span class="no">MANGA 01</span><b>短編漫画（準備中）</b></div>
+    </div>
+  </div>
+
+  <h2 class="section-title">四コマ</h2>
+  <p class="section-note">※ 各コマの「1〜4」を画像に差し替えて使えます。</p>
+  <div class="koma-wrap">
+    <div class="koma">
+      <div class="panels">
+        <div class="panel">1</div>
+        <div class="panel">2</div>
+        <div class="panel">3</div>
+        <div class="panel">4</div>
+      </div>
+      <div class="cap"><span class="no">4KOMA 01</span><b>勉強あるある</b></div>
+    </div>
+    <div class="koma">
+      <div class="panels">
+        <div class="panel">1</div>
+        <div class="panel">2</div>
+        <div class="panel">3</div>
+        <div class="panel">4</div>
+      </div>
+      <div class="cap"><span class="no">4KOMA 02</span><b>用語が覚えられない</b></div>
+    </div>
+  </div>
+
+  <h2 class="section-title">小論文</h2>
+  <p class="section-note">調べたことや考えたことを、短くまとめた読み物です。</p>
+  <div class="essays">
+    <article class="essay">
+      <div class="meta">ESSAY 01 ／ 2026.09.15</div>
+      <h3>「わからない」を書き留めることの意味</h3>
+      <p>医療の勉強を始めてまず感じたのは、知らない言葉の多さだった。ひとつ調べるとまた別の用語が出てきて、終わりが見えない。</p>
+      <p>それでも、わからなかったことをそのまま書き残しておくと、後から見返したときに自分がどこでつまずいたのかがはっきりする。このカルテ形式のノートは、そのための記録でもある。</p>
+    </article>
+    <article class="essay">
+      <div class="meta">ESSAY 02 ／ 2026.09.22</div>
+      <h3>からだの仕組みを「絵」で理解する</h3>
+      <p>文章だけで覚えようとすると、臓器の位置関係がなかなか頭に入らない。実際に絵に描いてみると、つながりや大きさの比率が自然とわかってくる。</p>
+      <p>描くという行為は、見ているつもりで見えていなかった部分に気づかせてくれる。これからもイラストを交えながら学んでいきたい。</p>
+    </article>
+  </div>
+
+  <footer>
+    <h3>お問い合わせ</h3>
+    <form class="contact-form" action="https://formspree.io/f/maqvpvoz" method="POST">
+      <input type="text" name="name" placeholder="お名前" required>
+      <input type="email" name="email" placeholder="メールアドレス" required>
+      <textarea name="message" placeholder="メッセージ" required></textarea>
+      <button type="submit">送信する</button>
+    </form>
+
+    <div class="notice">
+      当サイトの文章・イラスト・漫画等の無断使用、および生成AIの学習データとしての利用を固く禁じます。
+    </div>
+
+    <div class="hub">
+      <a href="https://azalea72.example/">Azalea Creative Room</a> の関連サイトです。
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
