@@ -119,6 +119,49 @@
   }
   nav.tabs a:hover{ color:var(--ink); }
 
+  /* ---- report link box ---- */
+  .report-link{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    text-decoration:none;
+    background:var(--ink);
+    color:var(--primary);
+    border-radius:4px;
+    border-left:6px solid var(--stamp);
+    padding:20px 24px;
+    margin-bottom:44px;
+    transition:background .2s, transform .15s;
+  }
+  .report-link:hover{ background:#3c4d61; transform:translateY(-2px); }
+  .report-link .en{
+    display:block;
+    font-family:'DotGothic16', monospace;
+    font-size:.7rem;
+    letter-spacing:.15em;
+    color:var(--primary-deep);
+    margin-bottom:4px;
+  }
+  .report-link .ttl{
+    display:block;
+    font-family:'Shippori Mincho', serif;
+    font-weight:700;
+    font-size:1.1rem;
+  }
+  .report-link .desc{
+    display:block;
+    font-size:.8rem;
+    color:#c8d4e2;
+    margin-top:2px;
+  }
+  .report-link .arrow{
+    margin-left:auto;
+    font-size:1.4rem;
+    color:var(--primary-deep);
+    transition:transform .15s;
+  }
+  .report-link:hover .arrow{ transform:translateX(4px); color:var(--primary); }
+
   h2.section-title{
     font-family:'Shippori Mincho', serif;
     font-size:1.2rem;
@@ -328,6 +371,15 @@
     <a href="column.html" class="current">column</a>
     <a href="about.html">about</a>
   </nav>
+
+  <a class="report-link" href="report1.html">
+    <div>
+      <span class="en">REPORT 01</span>
+      <span class="ttl">ドラマにでてきた病気一覧</span>
+      <span class="desc">ドラマに登場した病気を、まとめて見られるリストです。</span>
+    </div>
+    <span class="arrow">›</span>
+  </a>
 
   <h2 class="section-title">漫画・イラスト</h2>
   <p class="section-note">※ 画像を置く場合は、下の「IMAGE」の枠を &lt;img src="画像ファイル名"&gt; に差し替えてください。</p>
